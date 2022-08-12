@@ -16,7 +16,7 @@ transRouter.get('/', (req, res) => {
 });
 
 transRouter.get('/:id', (req, res) => {
-    const id = parseInt(req.params.id);
+    
     const text = 'SELECT * FROM transactions WHERE id = $1';
 
     db.query(text, [id], (error, results) => {
@@ -28,14 +28,39 @@ transRouter.get('/:id', (req, res) => {
 });
 
 transRouter.post('/', (req, res) => {
-    const { amount, date, recipient } = req.body;
-    const text = 'INSERT INTO transactions (amount, date, recipient) VALUES($1, $2, $3) RETURNING * '
+    const { amount, recipient } = req.body;
+    const text = 'INSERT INTO transactions (amount, date, recipient) VALUES($1, NOW(), $2) RETURNING * '
 
-    db.query(text, [amount, date, recipient], (error, results) => {
+    db.query(text, [amount, recipient], (error, results) => {
         if (error) {
             res.send(error.stack)
         }
         res.status(200).send('Created new transaction')
+    })
+});
+
+transRouter.put('/:id', (req, res) => {
+    
+    const { amount, recipient } =req.body;
+    const text = 'UPDATE transactions SET amount = $1, date = transaction_timestamp(), recipient = $2 WHERE id = $3 RETURNING *';
+
+    db.query(text, [amount, recipient, id], (err, results) => {
+        if (err) {
+            res.send(err.details)
+        }
+        res.status(200).send(results.rows)
+    })
+});
+
+transRouter.delete('/:id', (req, res) => {
+    
+    const text = 'DELETE FROM transactions WHERE id = $1';
+
+    db.query(text, [id], (err, results) => {
+        if (err) {
+            res.send(err.details)
+        }
+        res.status(200).send(`Transaction with ID:${id} has been deleted`)
     })
 });
 

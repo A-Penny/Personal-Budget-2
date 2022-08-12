@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const apiRouter = express.Router();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors')
@@ -16,9 +15,14 @@ app.use(express.static('public'));
 const envRouter = require('./routes/envelopes');
 const transRouter = require('./routes/transactions');
 
-// intercept requests at 'id' and parse the id string into a number
-apiRouter.param('id', (req, res, next) => {
-    req.params.id = parseInt(req.params.id);
+
+transRouter.param('id', (req, res, next) => {
+    id = parseInt(req.params.id);
+    next();
+});
+
+envRouter.param('id', (req, res, next) => {
+    id = parseInt(req.params.id);
     next();
 })
 
