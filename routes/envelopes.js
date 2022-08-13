@@ -2,7 +2,7 @@ const express = require('express');
 const db = require('../db/config');
 const envRouter = express.Router();
 
-envRouter.get('/', (req, res) => {
+envRouter.get('/', (req, res, next) => {
     const text = 'SELECT * FROM envelopes ORDER BY id ASC';
 
     db.query(text, (error, results) => {
@@ -31,7 +31,10 @@ envRouter.get('/:id', (req, res) => {
 
     db.query(text, [id], (error, results) => {
         if (error) {
-            res.send(error.stack)
+           return res.send(error.stack)
+        }
+        if (!results.rows[0]) {
+            return res.status(404).json('envelope not found')
         }
         res.status(200).json(results.rows)
     })
@@ -68,7 +71,7 @@ envRouter.patch('/:id', (req, res) => {
     db.query(text, [spent, id], (err, results) => {
         if (err) {
             res.send(err.details)
-        }
+        };
         res.status(200).send(`${spent} spent on envelope ID:${id}.`)
     })
 })
