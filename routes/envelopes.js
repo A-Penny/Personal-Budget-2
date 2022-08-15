@@ -17,11 +17,14 @@ envRouter.post('/', (req, res) => {
     const { name, start_balance, current_balance, spent } = req.body;
     const text = 'INSERT INTO envelopes (name, start_balance, current_balance, spent) VALUES ($1, $2, $3, $4) RETURNING *'
 
+    if (!name || !start_balance || !current_balance || !spent) {
+        return res.status(400).json('envelope not created')
+    }
     db.query(text, [name, start_balance, current_balance, spent], (error, results) => {
                     if (error) {
                         res.send(error.detail)
                     } else {
-                    res.status(201).send(`User added with ID: ${results.rows[0].id}`)
+                    res.status(200).send(`User added with ID: ${results.rows[0].id}`)
                 }
             })
 });

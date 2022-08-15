@@ -46,3 +46,62 @@ describe('GET/envelopes/:id', () => {
    });
 });
 
+describe('POST/envelopes', () => {
+   let data = {"name":"dummy", "start_balance":"100", "current_balance":"100", "spent":"0"}
+   it('responds with 200 created', function(done) {
+      request(app)
+      .post('/envelopes')
+      .send(data)
+      .set('Accept', 'application/json')
+      .expect(200)
+      .end((err) => {
+         if (err) return done(err);
+         done();
+      }); 
+   });
+});
+
+describe('POST/envelopes', () => {
+   let data = {"name":null, "starting_balance":null, "current_balance":null, "spent":null}
+   it('responds with 400 not created', function(done){
+      request(app)
+      .post('/envelopes')
+      .send(data)
+      .set('Accept', 'application/json')
+      .expect(400)
+      .expect('"envelope not created"')
+      .end((err) => {
+         if (err) return done(err);
+         done();
+      });
+   });
+});
+
+describe('DELETE/envelopes/:id', () => {
+   it('responds with json envelope envelope deleted', (done) => {
+      request(app)
+      .get('/envelopes/1')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err) => {
+         if (err) return done(err);
+         done();
+      });
+   });
+});
+
+describe('DELETE/envelopes/:id', () => {
+   it('responds with json envelope not found', (done) => {
+      request(app)
+      .get('/envelopes/0')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(404)
+      .expect('"envelope not found"')
+      .end((err) => {
+         if (err) return done(err);
+         done();
+      });
+   });
+});
